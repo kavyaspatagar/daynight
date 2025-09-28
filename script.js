@@ -9,17 +9,18 @@
                 (localStorage.getItem(STORAGE_KEY) === null && window.matchMedia('(prefers-color-scheme: dark)').matches);
 
   function applyMode(night){
+    // Apply day/night styles
     if(night){
       document.body.classList.add('dark');
       switchEl.classList.add('on');
       switchEl.setAttribute('aria-checked','true');
-      title.textContent = 'Night Mode';
+      title.textContent = 'Day Night Notes App'; // <-- changed
       metaTheme.setAttribute('content','#071227');
     } else {
       document.body.classList.remove('dark');
       switchEl.classList.remove('on');
       switchEl.setAttribute('aria-checked','false');
-      title.textContent = 'Day Mode';
+      title.textContent = 'Day Night Notes App'; // <-- changed
       metaTheme.setAttribute('content','#ffffff');
     }
     localStorage.setItem(STORAGE_KEY, night ? '1' : '0');
