@@ -115,3 +115,38 @@ fileUpload.addEventListener('change', async e=>{
     downloadPdf.style.display='none';
   }
 });
+
+function saveNote() {
+  const textarea = document.getElementById("noteInput");
+  const text = textarea.value.trim();
+  if (text !== "") {
+    const li = document.createElement("li");
+
+    // Create checkbox
+    const checkbox = document.createElement("input");
+    checkbox.type = "checkbox";
+    checkbox.style.marginRight = "8px";
+
+    // Note text
+    const span = document.createElement("span");
+    span.textContent = text;
+
+    li.appendChild(checkbox);
+    li.appendChild(span);
+
+    document.getElementById("notesList").appendChild(li);
+    textarea.value = "";
+  }
+}
+
+function deleteSelected() {
+  const list = document.getElementById("notesList");
+  const items = list.querySelectorAll("li");
+
+  items.forEach(li => {
+    const checkbox = li.querySelector("input[type=checkbox]");
+    if (checkbox && checkbox.checked) {
+      list.removeChild(li);
+    }
+  });
+}
