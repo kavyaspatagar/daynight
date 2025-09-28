@@ -1,119 +1,84 @@
-// Day/Night toggle logic
-(function(){
-  const switchEl = document.getElementById('switch');
-  const title = document.getElementById('title');
-  const metaTheme = document.getElementById('meta-theme-color');
-  const STORAGE_KEY = 'dayNight:isNight';
+// Toggle Mode
+const toggle = document.getElementById('modeToggle');
+const body = document.body;
 
-  let isNight = localStorage.getItem(STORAGE_KEY) === '1' ||
-                (localStorage.getItem(STORAGE_KEY) === null && window.matchMedia('(prefers-color-scheme: dark)').matches);
+// Load saved mode
+if (localStorage.getItem('dayNight:isNight') === 'true') {
+  body.classList.add('dark');
+  toggle.classList.add('on');
+}
 
-  function applyMode(night){
-    if(night){
-      document.body.classList.add('dark');
-      switchEl.classList.add('on');
-      switchEl.setAttribute('aria-checked','true');
-      metaTheme.setAttribute('content','#071227');
-    } else {
-      document.body.classList.remove('dark');
-      switchEl.classList.remove('on');
-      switchEl.setAttribute('aria-checked','false');
-      metaTheme.setAttribute('content','#ffffff');
-    }
-    // Static title
-    title.textContent = 'Day Night Notes App';
-    localStorage.setItem(STORAGE_KEY, night ? '1' : '0');
+toggle.addEventListener('click', () => {
+  body.classList.toggle('dark');
+  toggle.classList.toggle('on');
+  localStorage.setItem('dayNight:isNight', body.classList.contains('dark'));
+});
+
+// File Upload
+const fileInput = document.getElementById('fileInput');
+const pdfContainer = document.getElementById('pdfContainer');
+const textPreview = document.getElementById('textPreview');
+const downloadLink = document.getElementById('downloadPdf');
+
+fileInput.addEventListener('change', (event) => {
+  const file = event.target.files[0];
+  if (!file) return;
+
+  pdfContainer.innerHTML = '';
+  textPreview.textContent = '';
+  downloadLink.style.display = 'none';
+
+  const fileURL = URL.createObjectURL(file);
+
+  if (file.type === 'application/pdf') {
+    renderPDF(fileURL);
+
+    // Show download button
+    downloadLink.href = fileURL;
+    downloadLink.download = file.name;
+    downloadLink.style.display = 'inline-block';
+  } 
+  else if (file.type === 'text/plain') {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      textPreview.textContent = e.target.result;
+    };
+    reader.readAsText(file);
   }
+});
 
-  function toggle(){
-    isNight = !isNight;
-    applyMode(isNight);
+// Render PDF with PDF.js
+async function renderPDF(url) {
+  const pdf = await pdfjsLib.getDocument(url).promise;
+  for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
+    const page = await pdf.getPage(pageNum);
+    const viewport = page.getViewport({ scale: 1 });
+    const scale = pdfContainer.clientWidth / viewport.width;
+    const scaledViewport = page.getViewport({ scale });
+
+    const canvas = document.createElement('canvas');
+    const context = canvas.getContext('2d');
+    canvas.height = scaledViewport.height;
+    canvas.width = scaledViewport.width;
+    pdfContainer.appendChild(canvas);
+
+    await page.render({
+      canvasContext: context,
+      viewport: scaledViewport
+    }).promise;
   }
+}
 
-  switchEl.addEventListener('click', toggle);
-  switchEl.addEventListener('keydown', e=>{
-    if(e.key==='Enter'||e.key===' '){ e.preventDefault(); toggle(); }
-  });
-
-  applyMode(isNight);
-})();
-
-// Notes logic
+// Notes saving
 const saveBtn = document.getElementById('saveNote');
 const noteInput = document.getElementById('noteInput');
 const notesList = document.getElementById('notesList');
 
-function loadNotes(){
-  const notes = JSON.parse(localStorage.getItem('notes')||'[]');
-  notesList.innerHTML = '';
-  notes.forEach(note=>{
-    const li = document.createElement('li');
-    li.textContent = note;
-    notesList.appendChild(li);
-  });
-}
-saveBtn.addEventListener('click', ()=>{
-  const notes = JSON.parse(localStorage.getItem('notes')||'[]');
-  if(noteInput.value.trim()!==''){
-    notes.push(noteInput.value);
-    localStorage.setItem('notes', JSON.stringify(notes));
-    noteInput.value = '';
-    loadNotes();
-  }
-});
-loadNotes();
-
-// File upload logic (TXT + PDF using PDF.js)
-const fileUpload = document.getElementById('fileUpload');
-const fileContent = document.getElementById('fileContent');
-const pdfContainer = document.getElementById('pdfViewer'); // div for PDF.js
-const downloadPdf = document.getElementById('downloadPdf');
-
-fileUpload.addEventListener('change', async e=>{
-  const file = e.target.files[0];
-  if(!file) return;
-
-  fileContent.innerHTML = '';
-  pdfContainer.innerHTML = '';
-  pdfContainer.style.display = 'none';
-  downloadPdf.style.display = 'none';
-
-  if(file.type==='text/plain'){
-    const reader = new FileReader();
-    reader.onload = ()=>{
-      const pre = document.createElement('pre');
-      pre.textContent = reader.result;
-      fileContent.appendChild(pre);
-    }
-    reader.readAsText(file);
-
-  } else if(file.type==='application/pdf'){
-    const pdfData = await file.arrayBuffer();
-    const pdf = await pdfjsLib.getDocument({data:pdfData}).promise;
-
-    pdfContainer.style.display='block';
-
-    const containerWidth = pdfContainer.clientWidth;
-
-    for(let pageNum=1; pageNum<=pdf.numPages; pageNum++){
-      const page = await pdf.getPage(pageNum);
-      const viewport = page.getViewport({scale:1});
-      const scale = containerWidth / viewport.width;
-      const scaledViewport = page.getViewport({scale});
-
-      const canvas = document.createElement('canvas');
-      const context = canvas.getContext('2d');
-      canvas.height = scaledViewport.height;
-      canvas.width = scaledViewport.width;
-
-      await page.render({canvasContext: context, viewport: scaledViewport}).promise;
-      pdfContainer.appendChild(canvas);
-    }
-
-    const fileURL = URL.createObjectURL(file);
-    downloadPdf.href = fileURL;
-    downloadPdf.style.display='inline';
-  } else {
-    fileContent.innerHTML='Only .txt and .pdf files are supported';
-  }
+saveBtn.addEventListener('click', () => {
+  const note = noteInput.value.trim();
+  if (!note) return;
+  const li = document.createElement('li');
+  li.textContent = note;
+  notesList.appendChild(li);
+  noteInput.value = '';
 });

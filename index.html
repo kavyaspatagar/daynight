@@ -1,53 +1,43 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Day Night Notes App</title>
-
-  <!-- Mobile web app meta -->
-  <meta name="mobile-web-app-capable" content="yes">
-  <meta name="theme-color" content="#ffffff" id="meta-theme-color">
-
-  <!-- External CSS -->
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>File Upload + Notes</title>
   <link rel="stylesheet" href="style.css">
+  <!-- PDF.js -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.10.111/pdf.min.js"></script>
 </head>
 <body>
-  <div class="app" id="app">
-    <div class="card" role="main">
-
-      <!-- Day/Night Toggle -->
-      <h1 id="title">Day Night Notes App</h1>
-      <p id="desc">Tap the toggle to switch between Day (light) and Night (dark). Your choice will be remembered.</p>
-
-      <label class="toggle" aria-label="Day Night toggle">
-        <span id="labelLeft">Day</span>
-        <div id="switch" class="switch" role="switch" aria-checked="false" tabindex="0">
-          <div class="knob"></div>
-        </div>
-        <span id="labelRight">Night</span>
-      </label>
-
-      <!-- File Upload Section (first) -->
-      <h2>Upload a File</h2>
-      <input type="file" id="fileUpload" />
-      <div id="fileContent"></div>
-      <div id="pdfContainer" style="display:none; overflow:auto; max-height:400px; border:1px solid var(--card); border-radius:8px;"></div>
-      <a id="downloadPdf" href="#" download style="display:none;">Download PDF</a>
-
-      <!-- Notes Section -->
-      <h2>Write a Note</h2>
-      <textarea id="noteInput" placeholder="Write your note here..."></textarea>
-      <button id="saveNote">Save Note</button>
-
-      <h2>Saved Notes</h2>
-      <ul id="notesList"></ul>
+  <div class="card">
+    <!-- Toggle -->
+    <div class="toggle">
+      <span>Day/Night Mode</span>
+      <div class="switch" id="modeToggle">
+        <div class="knob"></div>
+      </div>
     </div>
+
+    <!-- File Upload -->
+    <h2>Upload File</h2>
+    <input type="file" id="fileInput" accept=".txt,.pdf" />
+
+    <!-- PDF Preview -->
+    <div id="pdfContainer"></div>
+    <!-- TXT Preview -->
+    <pre id="textPreview"></pre>
+    <!-- Download Link -->
+    <a id="downloadPdf" href="#" download style="display:none;">⬇️ Download PDF</a>
+
+    <!-- Notes -->
+    <h2>Write Notes</h2>
+    <textarea id="noteInput" placeholder="Write your note here..."></textarea>
+    <button id="saveNote">Save Note</button>
+
+    <h3>Saved Notes</h3>
+    <ul id="notesList"></ul>
   </div>
 
-  <!-- PDF.js library -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.10.111/pdf.min.js"></script>
-  <!-- Your script -->
   <script src="script.js"></script>
 </body>
 </html>

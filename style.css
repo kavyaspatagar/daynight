@@ -70,6 +70,16 @@ textarea {
   width: 100%;
   height: 100px;
   margin-bottom: 10px;
+  padding: 8px;
+  border-radius: 6px;
+  border: 1px solid rgba(0,0,0,0.2);
+  background-color: var(--card);
+  color: var(--text);
+  resize: vertical;
+}
+body.dark textarea {
+  background-color: var(--card);
+  color: var(--text);
 }
 button {
   padding: 8px 16px;
@@ -83,10 +93,14 @@ button:hover { opacity: 0.9; }
 ul { text-align: left; padding-left: 20px; }
 pre { white-space: pre-wrap; background: var(--card); padding: 10px; border-radius: 8px; }
 
-/* PDF canvas */
+/* PDF container */
 #pdfContainer canvas {
-  width: 100% !important; /* responsive */
+  width: 100% !important;
   border-radius: 6px;
   margin-bottom: 10px;
 }
-
+body.dark #pdfContainer {
+  background-color: var(--card);
+  padding: 6px;
+  border-radius: 8px;
+}
