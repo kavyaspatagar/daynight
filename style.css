@@ -114,3 +114,9 @@ pre {
   border-radius: 6px;
   margin-bottom: 10px;
 }
+
+#notesList {
+  list-style-type: none;  /* removes dots */
+  padding-left: 0;        /* removes left spacing */
+}
+
