@@ -9,20 +9,19 @@
                 (localStorage.getItem(STORAGE_KEY) === null && window.matchMedia('(prefers-color-scheme: dark)').matches);
 
   function applyMode(night){
-    // Apply day/night styles
     if(night){
       document.body.classList.add('dark');
       switchEl.classList.add('on');
       switchEl.setAttribute('aria-checked','true');
-      title.textContent = 'Day Night Notes App'; // <-- changed
       metaTheme.setAttribute('content','#071227');
     } else {
       document.body.classList.remove('dark');
       switchEl.classList.remove('on');
       switchEl.setAttribute('aria-checked','false');
-      title.textContent = 'Day Night Notes App'; // <-- changed
       metaTheme.setAttribute('content','#ffffff');
     }
+    // Always keep the title static
+    title.textContent = 'Day Night Notes App';
     localStorage.setItem(STORAGE_KEY, night ? '1' : '0');
   }
 
@@ -85,13 +84,29 @@ fileUpload.addEventListener('change', e=>{
       fileContent.appendChild(pre);
     }
     reader.readAsText(file);
+
   } else if(file.type==='application/pdf'){
-    const fileURL = URL.createObjectURL(file);
-    pdfViewer.src = fileURL;
-    pdfViewer.style.display='block';
-    fileContent.innerHTML='';
-    downloadPdf.href = fileURL;
-    downloadPdf.style.display='inline';
+    const reader = new FileReader();
+    reader.onload = function(e){
+      const blob = new Blob([e.target.result], { type: 'application/pdf' });
+      const fileURL = URL.createObjectURL(blob);
+
+      // Desktop: iframe preview
+      if(window.innerWidth > 768){ // optional: desktop width
+        pdfViewer.src = fileURL;
+        pdfViewer.style.display='block';
+      } else {
+        pdfViewer.style.display='none';
+        // Mobile: open in new tab
+        window.open(fileURL, '_blank');
+      }
+
+      fileContent.innerHTML='';
+      downloadPdf.href = fileURL;
+      downloadPdf.style.display='inline';
+    };
+    reader.readAsArrayBuffer(file);
+
   } else {
     fileContent.innerHTML='Only .txt and .pdf files are supported';
     pdfViewer.style.display='none';

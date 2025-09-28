@@ -15,7 +15,7 @@
   <div class="app" id="app">
     <div class="card" role="main">
       <!-- Title & description -->
-      <h1 id="title">Day Mode</h1>
+      <h1 id="title">Day Night Notes App</h1>
       <p id="desc">Tap the toggle to switch between Day (light) and Night (dark). Your choice will be remembered.</p>
 
       <!-- Day/Night Toggle -->
@@ -29,17 +29,17 @@
 
       <div class="hint">Add to home screen (browser menu → Add to Home screen) for a native-like app.</div>
 
-      <!-- Notes Section -->
-      <h2>Write a Note</h2>
-      <textarea id="noteInput" placeholder="Write your note here..."></textarea>
-      <button id="saveNote">Save Note</button>
-
-      <!-- File Upload Section -->
+      <!-- **File Upload Section (Moved first)** -->
       <h2>Upload a File</h2>
       <input type="file" id="fileUpload" />
       <div id="fileContent"></div>
       <iframe id="pdfViewer"></iframe>
-      <a id="downloadPdf" href="" download style="display:none;">Download PDF</a>
+      <a id="downloadPdf" href="#" download style="display:none;margin-top:8px;">Download PDF</a>
+
+      <!-- **Save Notes Section (Moved below File Upload)** -->
+      <h2>Write a Note</h2>
+      <textarea id="noteInput" placeholder="Write your note here..."></textarea>
+      <button id="saveNote">Save Note</button>
 
       <!-- Saved Notes -->
       <h2>Saved Notes</h2>
