@@ -20,7 +20,7 @@
       switchEl.setAttribute('aria-checked','false');
       metaTheme.setAttribute('content','#ffffff');
     }
-    // Always keep the title static
+    // Keep the title static
     title.textContent = 'Day Night Notes App';
     localStorage.setItem(STORAGE_KEY, night ? '1' : '0');
   }
@@ -91,17 +91,15 @@ fileUpload.addEventListener('change', e=>{
       const blob = new Blob([e.target.result], { type: 'application/pdf' });
       const fileURL = URL.createObjectURL(blob);
 
-      // Desktop: iframe preview
-      if(window.innerWidth > 768){ // optional: desktop width
+      if(window.innerWidth > 768){ // Desktop preview
         pdfViewer.src = fileURL;
         pdfViewer.style.display='block';
-      } else {
+        fileContent.innerHTML='';
+      } else { // Mobile
         pdfViewer.style.display='none';
-        // Mobile: open in new tab
-        window.open(fileURL, '_blank');
+        fileContent.innerHTML = 'PDF ready. Click "Download PDF" to view.';
       }
 
-      fileContent.innerHTML='';
       downloadPdf.href = fileURL;
       downloadPdf.style.display='inline';
     };
