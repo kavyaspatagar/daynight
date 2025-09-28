@@ -49,7 +49,6 @@ body.dark .card {
   border-radius:999px;
   background:var(--card);
   border: 1px solid rgba(0,0,0,0.05);
-  margin-bottom: 20px;
 }
 .switch {
   width:54px; height:30px; border-radius:999px; position:relative;
@@ -83,3 +82,10 @@ button {
 button:hover { opacity: 0.9; }
 ul { text-align: left; padding-left: 20px; }
 pre { white-space: pre-wrap; background: var(--card); padding: 10px; border-radius: 8px; }
+
+/* PDF canvas */
+#pdfContainer canvas {
+  width: 100% !important; /* responsive */
+  border-radius: 6px;
+  margin-bottom: 10px;
+}

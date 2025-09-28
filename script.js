@@ -62,50 +62,56 @@ saveBtn.addEventListener('click', ()=>{
 });
 loadNotes();
 
-// File upload logic (TXT + PDF using PDF.js)
+// PDF + TXT upload & preview
 const fileUpload = document.getElementById('fileUpload');
 const fileContent = document.getElementById('fileContent');
-const pdfCanvas = document.getElementById('pdfViewer');
+const pdfContainer = document.getElementById('pdfContainer');
 const downloadPdf = document.getElementById('downloadPdf');
 
-fileUpload.addEventListener('change', async e => {
+fileUpload.addEventListener('change', async e=>{
   const file = e.target.files[0];
-  if (!file) return;
+  if(!file) return;
 
-  if (file.type === 'text/plain') {
+  // TXT file preview
+  if(file.type==='text/plain'){
     const reader = new FileReader();
-    reader.onload = () => {
+    reader.onload = ()=>{
       const pre = document.createElement('pre');
       pre.textContent = reader.result;
-      fileContent.innerHTML = '';
-      pdfCanvas.style.display = 'none';
-      downloadPdf.style.display = 'none';
+      fileContent.innerHTML='';
+      pdfContainer.style.display='none';
+      downloadPdf.style.display='none';
       fileContent.appendChild(pre);
-    };
+    }
     reader.readAsText(file);
 
-  } else if (file.type === 'application/pdf') {
+  // PDF file preview
+  } else if(file.type==='application/pdf'){
+    const pdfData = await file.arrayBuffer();
+    const pdf = await pdfjsLib.getDocument({data:pdfData}).promise;
+
+    fileContent.innerHTML='';
+    pdfContainer.innerHTML='';
+    pdfContainer.style.display='block';
+
+    for(let pageNum=1; pageNum<=pdf.numPages; pageNum++){
+      const page = await pdf.getPage(pageNum);
+      const viewport = page.getViewport({scale:1.2});
+      const canvas = document.createElement('canvas');
+      const context = canvas.getContext('2d');
+      canvas.height = viewport.height;
+      canvas.width = viewport.width;
+      await page.render({canvasContext: context, viewport: viewport}).promise;
+      pdfContainer.appendChild(canvas);
+    }
+
     const fileURL = URL.createObjectURL(file);
     downloadPdf.href = fileURL;
-    downloadPdf.style.display = 'inline';
-    fileContent.innerHTML = '';
-
-    // Render PDF using PDF.js
-    const pdfData = await file.arrayBuffer();
-    const pdf = await pdfjsLib.getDocument({data: pdfData}).promise;
-
-    const page = await pdf.getPage(1);
-    const viewport = page.getViewport({ scale: 1.2 });
-    const context = pdfCanvas.getContext('2d');
-    pdfCanvas.height = viewport.height;
-    pdfCanvas.width = viewport.width;
-
-    await page.render({ canvasContext: context, viewport: viewport }).promise;
-    pdfCanvas.style.display = 'block';
+    downloadPdf.style.display='inline';
 
   } else {
-    fileContent.innerHTML = 'Only .txt and .pdf files are supported';
-    pdfCanvas.style.display = 'none';
-    downloadPdf.style.display = 'none';
+    fileContent.innerHTML='Only .txt and .pdf files are supported';
+    pdfContainer.style.display='none';
+    downloadPdf.style.display='none';
   }
 });
