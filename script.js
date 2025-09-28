@@ -48,10 +48,9 @@ pre { white-space: pre-wrap; background: var(--card); padding: 10px; border-radi
   margin-bottom: 10px;
 }
 
-// Day/Night toggle logic
+// ---------------- Day/Night Toggle ----------------
 (function(){
   const switchEl = document.getElementById('switch');
-  const title = document.getElementById('title');
   const metaTheme = document.getElementById('meta-theme-color');
   const STORAGE_KEY = 'dayNight:isNight';
 
@@ -70,8 +69,6 @@ pre { white-space: pre-wrap; background: var(--card); padding: 10px; border-radi
       switchEl.setAttribute('aria-checked','false');
       metaTheme.setAttribute('content','#ffffff');
     }
-    // Static title
-    title.textContent = 'Day Night Notes App';
     localStorage.setItem(STORAGE_KEY, night ? '1' : '0');
   }
 
@@ -88,7 +85,7 @@ pre { white-space: pre-wrap; background: var(--card); padding: 10px; border-radi
   applyMode(isNight);
 })();
 
-// Notes logic
+// ---------------- Notes Logic ----------------
 const saveBtn = document.getElementById('saveNote');
 const noteInput = document.getElementById('noteInput');
 const notesList = document.getElementById('notesList');
@@ -113,10 +110,10 @@ saveBtn.addEventListener('click', ()=>{
 });
 loadNotes();
 
-// File upload logic (TXT + PDF using PDF.js)
+// ---------------- File Upload Logic (TXT + PDF.js) ----------------
 const fileUpload = document.getElementById('fileUpload');
 const fileContent = document.getElementById('fileContent');
-const pdfContainer = document.getElementById('pdfViewer'); // div for PDF.js
+const pdfContainer = document.getElementById('pdfViewer');
 const downloadPdf = document.getElementById('downloadPdf');
 
 fileUpload.addEventListener('change', async e=>{
@@ -167,4 +164,3 @@ fileUpload.addEventListener('change', async e=>{
     fileContent.innerHTML='Only .txt and .pdf files are supported';
   }
 });
-
