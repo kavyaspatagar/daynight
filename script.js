@@ -1,4 +1,4 @@
-// Day/Night toggle logic
+// Day/Night toggle
 (function(){
   const switchEl = document.getElementById('switch');
   const title = document.getElementById('title');
@@ -24,36 +24,28 @@
     localStorage.setItem(STORAGE_KEY, night ? '1' : '0');
   }
 
-  function toggle(){
-    isNight = !isNight;
-    applyMode(isNight);
-  }
-
+  function toggle(){ isNight = !isNight; applyMode(isNight); }
   switchEl.addEventListener('click', toggle);
-  switchEl.addEventListener('keydown', e=>{
-    if(e.key==='Enter'||e.key===' '){ e.preventDefault(); toggle(); }
-  });
-
+  switchEl.addEventListener('keydown', e=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); toggle(); }});
   applyMode(isNight);
 })();
 
 // Notes logic
 const noteInput = document.getElementById("noteInput");
 const notesList = document.getElementById("notesList");
+const saveBtn = document.getElementById("saveNote");
+const deleteBtn = document.getElementById("deleteNotes");
 
-// Load saved notes
 function loadNotes(){
   const notes = JSON.parse(localStorage.getItem("notes") || "[]");
   notesList.innerHTML = "";
-  notes.forEach(noteObj => {
+  notes.forEach(note => {
     const li = document.createElement("li");
-
     const checkbox = document.createElement("input");
     checkbox.type = "checkbox";
-    checkbox.style.marginRight = "8px";
 
     const span = document.createElement("span");
-    span.textContent = noteObj.text;
+    span.textContent = note;
 
     li.appendChild(checkbox);
     li.appendChild(span);
@@ -61,36 +53,33 @@ function loadNotes(){
   });
 }
 
-function saveNote() {
+function saveNoteFunc(){
   const text = noteInput.value.trim();
-  if (text !== "") {
-    const notes = JSON.parse(localStorage.getItem("notes") || "[]");
-    notes.push({ text });
-    localStorage.setItem("notes", JSON.stringify(notes));
-    noteInput.value = "";
-    loadNotes();
-  }
+  if(text === "") return;
+  const notes = JSON.parse(localStorage.getItem("notes") || "[]");
+  notes.push(text);
+  localStorage.setItem("notes", JSON.stringify(notes));
+  noteInput.value = "";
+  loadNotes();
 }
 
-function deleteSelected() {
-  let notes = JSON.parse(localStorage.getItem("notes") || "[]");
+function deleteSelected(){
+  const notes = JSON.parse(localStorage.getItem("notes") || "[]");
   const items = notesList.querySelectorAll("li");
   const updatedNotes = [];
-
-  items.forEach((li, index) => {
+  items.forEach((li, index)=>{
     const checkbox = li.querySelector("input[type=checkbox]");
-    if (!(checkbox && checkbox.checked)) {
-      updatedNotes.push(notes[index]); // keep unchecked notes
-    }
+    if(!(checkbox && checkbox.checked)) updatedNotes.push(notes[index]);
   });
-
   localStorage.setItem("notes", JSON.stringify(updatedNotes));
   loadNotes();
 }
 
-loadNotes(); // initial load
+saveBtn.addEventListener("click", saveNoteFunc);
+deleteBtn.addEventListener("click", deleteSelected);
+loadNotes();
 
-// PDF + TXT upload & preview
+// PDF + TXT upload
 const fileUpload = document.getElementById('fileUpload');
 const fileContent = document.getElementById('fileContent');
 const pdfContainer = document.getElementById('pdfContainer');
@@ -105,9 +94,7 @@ fileUpload.addEventListener('change', async e=>{
     reader.onload = ()=>{
       const pre = document.createElement('pre');
       pre.textContent = reader.result;
-      fileContent.innerHTML='';
-      pdfContainer.style.display='none';
-      downloadPdf.style.display='none';
+      fileContent.innerHTML=''; pdfContainer.style.display='none'; downloadPdf.style.display='none';
       fileContent.appendChild(pre);
     }
     reader.readAsText(file);
@@ -115,29 +102,15 @@ fileUpload.addEventListener('change', async e=>{
   } else if(file.type==='application/pdf'){
     const pdfData = await file.arrayBuffer();
     const pdf = await pdfjsLib.getDocument({data:pdfData}).promise;
-
-    fileContent.innerHTML='';
-    pdfContainer.innerHTML='';
-    pdfContainer.style.display='block';
-
-    for(let pageNum=1; pageNum<=pdf.numPages; pageNum++){
-      const page = await pdf.getPage(pageNum);
+    fileContent.innerHTML=''; pdfContainer.innerHTML=''; pdfContainer.style.display='block';
+    for(let i=1;i<=pdf.numPages;i++){
+      const page = await pdf.getPage(i);
       const viewport = page.getViewport({scale:1.2});
       const canvas = document.createElement('canvas');
       const context = canvas.getContext('2d');
-      canvas.height = viewport.height;
-      canvas.width = viewport.width;
-      await page.render({canvasContext: context, viewport: viewport}).promise;
+      canvas.height = viewport.height; canvas.width = viewport.width;
+      await page.render({canvasContext: context, viewport}).promise;
       pdfContainer.appendChild(canvas);
     }
-
     const fileURL = URL.createObjectURL(file);
-    downloadPdf.href = fileURL;
-    downloadPdf.style.display='inline';
-
-  } else {
-    fileContent.innerHTML='Only .txt and .pdf files are supported';
-    pdfContainer.style.display='none';
-    downloadPdf.style.display='none';
-  }
-});
+    download

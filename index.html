@@ -28,7 +28,7 @@
         <span id="labelRight">Night</span>
       </label>
 
-      <!-- File Upload Section (first) -->
+      <!-- File Upload Section -->
       <h2>Upload a File</h2>
       <input type="file" id="fileUpload" />
       <div id="fileContent"></div>
@@ -36,12 +36,10 @@
       <a id="downloadPdf" href="#" download style="display:none;">Download PDF</a>
 
       <!-- Notes Section -->
-	<h2>Write a Note</h2>
-	<textarea id="noteInput" placeholder="Write your note here..."></textarea>
-	<button onclick="saveNote()">Save Note</button>
-	<button onclick="deleteSelected()">Delete Selected</button>
-	<ul id="notesList"></ul>
-
+      <h2>Write a Note</h2>
+      <textarea id="noteInput" placeholder="Write your note here..."></textarea>
+      <button id="saveNote">Save Note</button>
+      <button id="deleteNotes">Delete Selected</button>
 
       <h2>Saved Notes</h2>
       <ul id="notesList"></ul>
@@ -50,7 +48,7 @@
 
   <!-- PDF.js library -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.10.111/pdf.min.js"></script>
-  <!-- Your script -->
+  <!-- Script -->
   <script src="script.js"></script>
 </body>
 </html>

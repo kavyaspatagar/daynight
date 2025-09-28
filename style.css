@@ -49,6 +49,7 @@ body.dark .card {
   border-radius:999px;
   background:var(--card);
   border: 1px solid rgba(0,0,0,0.05);
+  margin-bottom: 20px;
 }
 .switch {
   width:54px; height:30px; border-radius:999px; position:relative;
@@ -73,20 +74,13 @@ textarea {
   padding: 8px;
   border-radius: 6px;
   border: 1px solid rgba(0,0,0,0.18);
-  background: var(--card);   /* follows theme */
-  color: var(--text);        /* follows theme */
+  background: var(--card);   
+  color: var(--text);        
   resize: vertical;
 }
-body.dark textarea {
-  background: var(--card);
-  color: var(--text);
-}
-textarea::placeholder {
-  color: rgba(0,0,0,0.5);
-}
-body.dark textarea::placeholder {
-  color: rgba(255,255,255,0.6);
-}
+body.dark textarea { background: var(--card); color: var(--text); }
+textarea::placeholder { color: rgba(0,0,0,0.5); }
+body.dark textarea::placeholder { color: rgba(255,255,255,0.6); }
 
 button {
   padding: 8px 16px;
@@ -95,10 +89,36 @@ button {
   color: white;
   border-radius: 6px;
   cursor: pointer;
+  margin-right: 8px;
 }
 button:hover { opacity: 0.9; }
 
-ul { text-align: left; padding-left: 20px; }
+ul#notesList {
+  list-style-type: none;  
+  padding-left: 0;
+  margin-top: 10px;
+}
+
+ul#notesList li {
+  margin-bottom: 8px;
+  padding: 6px 10px;
+  border-radius: 6px;
+  background: var(--card);
+  color: var(--text);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* Checkboxes hidden by default */
+ul#notesList li input[type=checkbox] { display: none; }
+
+/* PDF canvas */
+#pdfContainer canvas {
+  width: 100% !important; 
+  border-radius: 6px;
+  margin-bottom: 10px;
+}
 
 pre { 
   white-space: pre-wrap; 
@@ -107,16 +127,3 @@ pre {
   border-radius: 8px; 
   color: var(--text);
 }
-
-/* PDF canvas */
-#pdfContainer canvas {
-  width: 100% !important; /* responsive */
-  border-radius: 6px;
-  margin-bottom: 10px;
-}
-
-#notesList {
-  list-style-type: none;  /* removes dots */
-  padding-left: 0;        /* removes left spacing */
-}
-
