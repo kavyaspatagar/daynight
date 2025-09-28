@@ -3,22 +3,24 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Day / Night Notes App</title>
+  <title>Day Night Notes App</title>
 
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="theme-color" content="#ffffff" id="meta-theme-color">
 
-  <!-- External CSS -->
+  <!-- CSS -->
   <link rel="stylesheet" href="style.css">
+
+  <!-- PDF.js library -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.10.111/pdf.min.js"></script>
 </head>
 <body>
   <div class="app" id="app">
     <div class="card" role="main">
-      <!-- Title & description -->
-      <h1 id="title">Day Night Notes App</h1>
-      <p id="desc">Tap the toggle to switch between Day (light) and Night (dark). Your choice will be remembered.</p>
 
       <!-- Day/Night Toggle -->
+      <h1 id="title">Day Night Notes App</h1>
+      <p id="desc">Tap the toggle to switch between Day (light) and Night (dark). Your choice will be remembered.</p>
       <label class="toggle" aria-label="Day Night toggle">
         <span id="labelLeft">Day</span>
         <div id="switch" class="switch" role="switch" aria-checked="false" tabindex="0">
@@ -27,27 +29,28 @@
         <span id="labelRight">Night</span>
       </label>
 
-      <div class="hint">Add to home screen (browser menu → Add to Home screen) for a native-like app.</div>
-
-      <!-- 1. File Upload Section -->
+      <!-- File Upload Section -->
       <h2>Upload a File</h2>
       <input type="file" id="fileUpload" />
       <div id="fileContent"></div>
-      <iframe id="pdfViewer"></iframe>
-      <a id="downloadPdf" href="#" download style="display:none;margin-top:8px;">Download PDF</a>
+      <canvas id="pdfViewer" style="width:100%; display:none;"></canvas>
+      <a id="downloadPdf" href="#" download="file.pdf" style="display:none;">Download PDF</a>
 
-      <!-- 2. Write a Note Section -->
+      <!-- Notes Section -->
       <h2>Write a Note</h2>
       <textarea id="noteInput" placeholder="Write your note here..."></textarea>
       <button id="saveNote">Save Note</button>
 
-      <!-- 3. Saved Notes Section -->
+      <!-- Saved Notes -->
       <h2>Saved Notes</h2>
       <ul id="notesList"></ul>
+
+      <div class="hint">Add to home screen (browser menu → Add to Home screen) for a native-like app.</div>
+
     </div>
   </div>
 
-  <!-- External JS -->
+  <!-- JS -->
   <script src="script.js"></script>
 </body>
 </html>
