@@ -82,3 +82,11 @@ button {
 button:hover { opacity: 0.9; }
 ul { text-align: left; padding-left: 20px; }
 pre { white-space: pre-wrap; background: var(--card); padding: 10px; border-radius: 8px; }
+iframe {
+  border-radius: 8px;
+  background: var(--card);
+  margin-top: 10px;
+  width: 100%;
+  height: 400px;
+  display: none;
+}

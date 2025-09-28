@@ -63,22 +63,32 @@ saveBtn.addEventListener('click', ()=>{
 });
 loadNotes();
 
-// File upload logic
+// File upload logic (TXT + PDF)
 const fileUpload = document.getElementById('fileUpload');
 const fileContent = document.getElementById('fileContent');
+const pdfViewer = document.getElementById('pdfViewer');
 
 fileUpload.addEventListener('change', e=>{
   const file = e.target.files[0];
-  if(file && file.type==='text/plain'){
+  if(!file) return;
+
+  if(file.type==='text/plain'){
     const reader = new FileReader();
     reader.onload = ()=>{
       const pre = document.createElement('pre');
       pre.textContent = reader.result;
       fileContent.innerHTML='';
+      pdfViewer.style.display='none';
       fileContent.appendChild(pre);
     }
     reader.readAsText(file);
+  } else if(file.type==='application/pdf'){
+    const fileURL = URL.createObjectURL(file);
+    pdfViewer.src = fileURL;
+    pdfViewer.style.display='block';
+    fileContent.innerHTML='';
   } else {
-    fileContent.innerHTML='Only .txt files supported for now';
+    fileContent.innerHTML='Only .txt and .pdf files are supported';
+    pdfViewer.style.display='none';
   }
 });
