@@ -20,6 +20,7 @@
       switchEl.setAttribute('aria-checked','false');
       metaTheme.setAttribute('content','#ffffff');
     }
+    // Static title
     title.textContent = 'Day Night Notes App';
     localStorage.setItem(STORAGE_KEY, night ? '1' : '0');
   }
@@ -62,56 +63,57 @@ saveBtn.addEventListener('click', ()=>{
 });
 loadNotes();
 
-// PDF + TXT upload & preview
+// File upload logic (TXT + PDF using PDF.js)
 const fileUpload = document.getElementById('fileUpload');
 const fileContent = document.getElementById('fileContent');
-const pdfContainer = document.getElementById('pdfContainer');
+const pdfContainer = document.getElementById('pdfViewer'); // div for PDF.js
 const downloadPdf = document.getElementById('downloadPdf');
 
 fileUpload.addEventListener('change', async e=>{
   const file = e.target.files[0];
   if(!file) return;
 
-  // TXT file preview
+  fileContent.innerHTML = '';
+  pdfContainer.innerHTML = '';
+  pdfContainer.style.display = 'none';
+  downloadPdf.style.display = 'none';
+
   if(file.type==='text/plain'){
     const reader = new FileReader();
     reader.onload = ()=>{
       const pre = document.createElement('pre');
       pre.textContent = reader.result;
-      fileContent.innerHTML='';
-      pdfContainer.style.display='none';
-      downloadPdf.style.display='none';
       fileContent.appendChild(pre);
     }
     reader.readAsText(file);
 
-  // PDF file preview
   } else if(file.type==='application/pdf'){
     const pdfData = await file.arrayBuffer();
     const pdf = await pdfjsLib.getDocument({data:pdfData}).promise;
 
-    fileContent.innerHTML='';
-    pdfContainer.innerHTML='';
     pdfContainer.style.display='block';
+
+    const containerWidth = pdfContainer.clientWidth;
 
     for(let pageNum=1; pageNum<=pdf.numPages; pageNum++){
       const page = await pdf.getPage(pageNum);
-      const viewport = page.getViewport({scale:1.2});
+      const viewport = page.getViewport({scale:1});
+      const scale = containerWidth / viewport.width;
+      const scaledViewport = page.getViewport({scale});
+
       const canvas = document.createElement('canvas');
       const context = canvas.getContext('2d');
-      canvas.height = viewport.height;
-      canvas.width = viewport.width;
-      await page.render({canvasContext: context, viewport: viewport}).promise;
+      canvas.height = scaledViewport.height;
+      canvas.width = scaledViewport.width;
+
+      await page.render({canvasContext: context, viewport: scaledViewport}).promise;
       pdfContainer.appendChild(canvas);
     }
 
     const fileURL = URL.createObjectURL(file);
     downloadPdf.href = fileURL;
     downloadPdf.style.display='inline';
-
   } else {
     fileContent.innerHTML='Only .txt and .pdf files are supported';
-    pdfContainer.style.display='none';
-    downloadPdf.style.display='none';
   }
 });
