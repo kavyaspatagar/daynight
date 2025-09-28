@@ -67,6 +67,7 @@ loadNotes();
 const fileUpload = document.getElementById('fileUpload');
 const fileContent = document.getElementById('fileContent');
 const pdfViewer = document.getElementById('pdfViewer');
+const downloadPdf = document.getElementById('downloadPdf');
 
 fileUpload.addEventListener('change', e=>{
   const file = e.target.files[0];
@@ -79,6 +80,7 @@ fileUpload.addEventListener('change', e=>{
       pre.textContent = reader.result;
       fileContent.innerHTML='';
       pdfViewer.style.display='none';
+      downloadPdf.style.display='none';
       fileContent.appendChild(pre);
     }
     reader.readAsText(file);
@@ -87,8 +89,11 @@ fileUpload.addEventListener('change', e=>{
     pdfViewer.src = fileURL;
     pdfViewer.style.display='block';
     fileContent.innerHTML='';
+    downloadPdf.href = fileURL;
+    downloadPdf.style.display='inline';
   } else {
     fileContent.innerHTML='Only .txt and .pdf files are supported';
     pdfViewer.style.display='none';
+    downloadPdf.style.display='none';
   }
 });
