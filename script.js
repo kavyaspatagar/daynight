@@ -38,29 +38,57 @@
 })();
 
 // Notes logic
-const saveBtn = document.getElementById('saveNote');
-const noteInput = document.getElementById('noteInput');
-const notesList = document.getElementById('notesList');
+const noteInput = document.getElementById("noteInput");
+const notesList = document.getElementById("notesList");
 
+// Load saved notes
 function loadNotes(){
-  const notes = JSON.parse(localStorage.getItem('notes')||'[]');
-  notesList.innerHTML = '';
-  notes.forEach(note=>{
-    const li = document.createElement('li');
-    li.textContent = note;
+  const notes = JSON.parse(localStorage.getItem("notes") || "[]");
+  notesList.innerHTML = "";
+  notes.forEach(noteObj => {
+    const li = document.createElement("li");
+
+    const checkbox = document.createElement("input");
+    checkbox.type = "checkbox";
+    checkbox.style.marginRight = "8px";
+
+    const span = document.createElement("span");
+    span.textContent = noteObj.text;
+
+    li.appendChild(checkbox);
+    li.appendChild(span);
     notesList.appendChild(li);
   });
 }
-saveBtn.addEventListener('click', ()=>{
-  const notes = JSON.parse(localStorage.getItem('notes')||'[]');
-  if(noteInput.value.trim()!==''){
-    notes.push(noteInput.value);
-    localStorage.setItem('notes', JSON.stringify(notes));
-    noteInput.value = '';
+
+function saveNote() {
+  const text = noteInput.value.trim();
+  if (text !== "") {
+    const notes = JSON.parse(localStorage.getItem("notes") || "[]");
+    notes.push({ text });
+    localStorage.setItem("notes", JSON.stringify(notes));
+    noteInput.value = "";
     loadNotes();
   }
-});
-loadNotes();
+}
+
+function deleteSelected() {
+  let notes = JSON.parse(localStorage.getItem("notes") || "[]");
+  const items = notesList.querySelectorAll("li");
+  const updatedNotes = [];
+
+  items.forEach((li, index) => {
+    const checkbox = li.querySelector("input[type=checkbox]");
+    if (!(checkbox && checkbox.checked)) {
+      updatedNotes.push(notes[index]); // keep unchecked notes
+    }
+  });
+
+  localStorage.setItem("notes", JSON.stringify(updatedNotes));
+  loadNotes();
+}
+
+loadNotes(); // initial load
 
 // PDF + TXT upload & preview
 const fileUpload = document.getElementById('fileUpload');
@@ -72,7 +100,6 @@ fileUpload.addEventListener('change', async e=>{
   const file = e.target.files[0];
   if(!file) return;
 
-  // TXT file preview
   if(file.type==='text/plain'){
     const reader = new FileReader();
     reader.onload = ()=>{
@@ -85,7 +112,6 @@ fileUpload.addEventListener('change', async e=>{
     }
     reader.readAsText(file);
 
-  // PDF file preview
   } else if(file.type==='application/pdf'){
     const pdfData = await file.arrayBuffer();
     const pdf = await pdfjsLib.getDocument({data:pdfData}).promise;
@@ -115,38 +141,3 @@ fileUpload.addEventListener('change', async e=>{
     downloadPdf.style.display='none';
   }
 });
-
-function saveNote() {
-  const textarea = document.getElementById("noteInput");
-  const text = textarea.value.trim();
-  if (text !== "") {
-    const li = document.createElement("li");
-
-    // Create checkbox
-    const checkbox = document.createElement("input");
-    checkbox.type = "checkbox";
-    checkbox.style.marginRight = "8px";
-
-    // Note text
-    const span = document.createElement("span");
-    span.textContent = text;
-
-    li.appendChild(checkbox);
-    li.appendChild(span);
-
-    document.getElementById("notesList").appendChild(li);
-    textarea.value = "";
-  }
-}
-
-function deleteSelected() {
-  const list = document.getElementById("notesList");
-  const items = list.querySelectorAll("li");
-
-  items.forEach(li => {
-    const checkbox = li.querySelector("input[type=checkbox]");
-    if (checkbox && checkbox.checked) {
-      list.removeChild(li);
-    }
-  });
-}
