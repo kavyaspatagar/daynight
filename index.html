@@ -1,96 +1,52 @@
-// Day/Night toggle logic
-(function(){
-  const switchEl = document.getElementById('switch');
-  const title = document.getElementById('title');
-  const metaTheme = document.getElementById('meta-theme-color');
-  const STORAGE_KEY = 'dayNight:isNight';
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Day / Night Notes App</title>
 
-  let isNight = localStorage.getItem(STORAGE_KEY) === '1' ||
-                (localStorage.getItem(STORAGE_KEY) === null && window.matchMedia('(prefers-color-scheme: dark)').matches);
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="theme-color" content="#ffffff" id="meta-theme-color">
 
-  function applyMode(night){
-    if(night){
-      document.body.classList.add('dark');
-      switchEl.classList.add('on');
-      switchEl.setAttribute('aria-checked','true');
-      title.textContent = 'Night Mode';
-      metaTheme.setAttribute('content','#071227');
-    } else {
-      document.body.classList.remove('dark');
-      switchEl.classList.remove('on');
-      switchEl.setAttribute('aria-checked','false');
-      title.textContent = 'Day Mode';
-      metaTheme.setAttribute('content','#ffffff');
-    }
-    localStorage.setItem(STORAGE_KEY, night ? '1' : '0');
-  }
+  <!-- External CSS -->
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="app" id="app">
+    <div class="card" role="main">
+      <!-- Title & description -->
+      <h1 id="title">Day Mode</h1>
+      <p id="desc">Tap the toggle to switch between Day (light) and Night (dark). Your choice will be remembered.</p>
 
-  function toggle(){
-    isNight = !isNight;
-    applyMode(isNight);
-  }
+      <!-- Day/Night Toggle -->
+      <label class="toggle" aria-label="Day Night toggle">
+        <span id="labelLeft">Day</span>
+        <div id="switch" class="switch" role="switch" aria-checked="false" tabindex="0">
+          <div class="knob"></div>
+        </div>
+        <span id="labelRight">Night</span>
+      </label>
 
-  switchEl.addEventListener('click', toggle);
-  switchEl.addEventListener('keydown', e=>{
-    if(e.key==='Enter'||e.key===' '){ e.preventDefault(); toggle(); }
-  });
+      <div class="hint">Add to home screen (browser menu → Add to Home screen) for a native-like app.</div>
 
-  applyMode(isNight);
-})();
+      <!-- Notes Section -->
+      <h2>Write a Note</h2>
+      <textarea id="noteInput" placeholder="Write your note here..."></textarea>
+      <button id="saveNote">Save Note</button>
 
-// Notes logic
-const saveBtn = document.getElementById('saveNote');
-const noteInput = document.getElementById('noteInput');
-const notesList = document.getElementById('notesList');
+      <!-- File Upload Section -->
+      <h2>Upload a File</h2>
+      <input type="file" id="fileUpload" />
+      <div id="fileContent"></div>
+      <iframe id="pdfViewer"></iframe>
 
-function loadNotes(){
-  const notes = JSON.parse(localStorage.getItem('notes')||'[]');
-  notesList.innerHTML = '';
-  notes.forEach(note=>{
-    const li = document.createElement('li');
-    li.textContent = note;
-    notesList.appendChild(li);
-  });
-}
-saveBtn.addEventListener('click', ()=>{
-  const notes = JSON.parse(localStorage.getItem('notes')||'[]');
-  if(noteInput.value.trim()!==''){
-    notes.push(noteInput.value);
-    localStorage.setItem('notes', JSON.stringify(notes));
-    noteInput.value = '';
-    loadNotes();
-  }
-});
-loadNotes();
+      <!-- Saved Notes -->
+      <h2>Saved Notes</h2>
+      <ul id="notesList"></ul>
+    </div>
+  </div>
 
-// File upload logic (.txt and PDF)
-const fileUpload = document.getElementById('fileUpload');
-const fileContent = document.getElementById('fileContent');
-const pdfViewer = document.getElementById('pdfViewer');
-
-fileUpload.addEventListener('change', e => {
-  const file = e.target.files[0];
-  if (!file) return;
-
-  const fileType = file.type;
-
-  if (fileType === 'text/plain') {
-    const reader = new FileReader();
-    reader.onload = () => {
-      fileContent.innerHTML = '';
-      pdfViewer.style.display = 'none';
-      const pre = document.createElement('pre');
-      pre.textContent = reader.result;
-      fileContent.appendChild(pre);
-    }
-    reader.readAsText(file);
-  } else if (fileType === 'application/pdf') {
-    const fileURL = URL.createObjectURL(file);
-    pdfViewer.src = fileURL;
-    pdfViewer.style.display = 'block';
-    fileContent.innerHTML = '';
-  } else {
-    fileContent.innerHTML = 'Only .txt and .pdf files are supported';
-    pdfViewer.style.display = 'none';
-  }
-});
+  <!-- External JS -->
+  <script src="script.js"></script>
+</body>
+</html>
